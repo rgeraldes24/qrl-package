@@ -57,7 +57,7 @@ def launch(
             clef_data = clef_keystore.generate_clef_keystore(
                 plan,
                 prefunded_account,
-                args_with_right_defaults.participants,
+                participant.remote_signer_image,
                 args_with_right_defaults.docker_cache_params,
             )
             clef_participant = participant

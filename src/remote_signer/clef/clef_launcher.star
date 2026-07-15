@@ -89,14 +89,24 @@ def get_config(
         constants.CLEF_KEYSTORE_DIRPATH_ON_SERVICE_CONTAINER,
         launcher.keystore.clef_relative_dirpath,
     )
+    config_dirpath = shared_utils.path_join(
+        constants.CLEF_KEYSTORE_DIRPATH_ON_SERVICE_CONTAINER,
+        launcher.keystore.config_relative_dirpath,
+    )
+    rules_filepath = shared_utils.path_join(
+        constants.CLEF_KEYSTORE_DIRPATH_ON_SERVICE_CONTAINER,
+        launcher.keystore.rules_relative_filepath,
+    )
 
-    cmd = [
+    clef_cmd = [
         "clef",
         "--loglevel={0}".format(log_level),
         "--keystore={0}".format(keystore_dirpath),
+        "--configdir={0}".format(config_dirpath),
+        "--rules={0}".format(rules_filepath),
         "--chainid={0}".format(launcher.networkid),
         "--http.addr=0.0.0.0",
-        "--http.vhosts={0}".format("*"),
+        "--http.vhosts='*'",
         "--http",
         "--http.port={0}".format(CLEF_HTTP_PORT_NUM),
         "--suppress-bootwarn",
@@ -105,7 +115,16 @@ def get_config(
 
     if len(participant.remote_signer_extra_params) > 0:
         # this is a repeated<proto type>, we convert it into Starlark
-        cmd.extend([param for param in participant.remote_signer_extra_params])
+        clef_cmd.extend([param for param in participant.remote_signer_extra_params])
+
+    cmd = [
+        "sh",
+        "-c",
+        "printf '%s\\n' '{0}' | {1}".format(
+            launcher.keystore.master_password,
+            " ".join(clef_cmd),
+        ),
+    ]
 
     files = {
         constants.CLEF_KEYSTORE_DIRPATH_ON_SERVICE_CONTAINER: launcher.keystore.file_artifact_uuid,
