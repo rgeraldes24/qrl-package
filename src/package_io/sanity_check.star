@@ -143,7 +143,6 @@ SUBCATEGORY_PARAMS = {
         "deposit_contract_address",
         "seconds_per_slot",
         "slots_per_epoch",
-        "epochs_per_execution_voting_period",
         "num_validator_keys_per_node",
         "preregistered_validator_keys_mnemonic",
         "preregistered_validator_count",

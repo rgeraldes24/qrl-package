@@ -635,24 +635,19 @@ def parse_network_params(plan, input_args):
     if result["network_params"]["slots_per_epoch"] == 0:
         fail("slots_per_epoch is 0 needs to be > 0 ")
 
-    if result["network_params"]["epochs_per_execution_voting_period"] == 0:
-        fail("epochs_per_execution_voting_period is 0 needs to be > 0 ")
-
     # Mainnet-built Qrysm compiles execution_data_votes as List[T, 512].
-    # Native hashing uses the runtime product, so the two must match.
+    # Native hashing uses the runtime product, so derive the period from slots.
     if result["network_params"]["preset"] == "mainnet":
-        votes_length = (
-            result["network_params"]["epochs_per_execution_voting_period"]
-            * result["network_params"]["slots_per_epoch"]
-        )
-        if votes_length != 512:
+        slots_per_epoch = result["network_params"]["slots_per_epoch"]
+        if 512 % slots_per_epoch != 0:
             fail(
-                "epochs_per_execution_voting_period ({0}) * slots_per_epoch ({1}) is {2}; a mainnet Qrysm binary requires 512".format(
-                    result["network_params"]["epochs_per_execution_voting_period"],
-                    result["network_params"]["slots_per_epoch"],
-                    votes_length,
+                "slots_per_epoch ({0}) must divide 512 so a mainnet Qrysm binary's execution_data_votes list matches".format(
+                    slots_per_epoch,
                 )
             )
+        result["network_params"]["epochs_per_execution_voting_period"] = (
+            512 // slots_per_epoch
+        )
 
     if (
         result["network_params"]["network"] == constants.NETWORK_NAME.kurtosis
@@ -785,6 +780,7 @@ def default_network_params():
         "deposit_contract_address": "Q42424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242",
         "seconds_per_slot": 60,
         "slots_per_epoch": 128,
+        # Overwritten for mainnet as 512 / slots_per_epoch.
         "epochs_per_execution_voting_period": 4,
         "num_validator_keys_per_node": 64,
         "preregistered_validator_keys_mnemonic": constants.DEFAULT_MNEMONIC,
