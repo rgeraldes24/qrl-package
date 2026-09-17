@@ -83,6 +83,7 @@ def new_env_file_for_el_cl_genesis_data(
         "DepositContractAddress": network_params.deposit_contract_address,
         "SecondsPerSlot": network_params.seconds_per_slot,
         "SlotsPerEpoch": network_params.slots_per_epoch,
+        "EpochsPerExecutionVotingPeriod": network_params.epochs_per_execution_voting_period,
         "PreregisteredValidatorKeysMnemonic": network_params.preregistered_validator_keys_mnemonic,
         "NumValidatorKeysToPreregister": total_num_validator_keys_to_preregister,
         "GenesisDelay": 0,  # This delay is already precaculated in the final_genesis_timestamp

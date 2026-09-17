@@ -272,6 +272,9 @@ def input_parser(plan, input_args):
             ],
             seconds_per_slot=result["network_params"]["seconds_per_slot"],
             slots_per_epoch=result["network_params"]["slots_per_epoch"],
+            epochs_per_execution_voting_period=result["network_params"][
+                "epochs_per_execution_voting_period"
+            ],
             genesis_delay=result["network_params"]["genesis_delay"],
             genesis_gaslimit=result["network_params"]["genesis_gaslimit"],
             light_kdf_enabled=result["network_params"]["light_kdf_enabled"],
@@ -632,6 +635,25 @@ def parse_network_params(plan, input_args):
     if result["network_params"]["slots_per_epoch"] == 0:
         fail("slots_per_epoch is 0 needs to be > 0 ")
 
+    if result["network_params"]["epochs_per_execution_voting_period"] == 0:
+        fail("epochs_per_execution_voting_period is 0 needs to be > 0 ")
+
+    # Mainnet-built Qrysm compiles execution_data_votes as List[T, 512].
+    # Native hashing uses the runtime product, so the two must match.
+    if result["network_params"]["preset"] == "mainnet":
+        votes_length = (
+            result["network_params"]["epochs_per_execution_voting_period"]
+            * result["network_params"]["slots_per_epoch"]
+        )
+        if votes_length != 512:
+            fail(
+                "epochs_per_execution_voting_period ({0}) * slots_per_epoch ({1}) is {2}; a mainnet Qrysm binary requires 512".format(
+                    result["network_params"]["epochs_per_execution_voting_period"],
+                    result["network_params"]["slots_per_epoch"],
+                    votes_length,
+                )
+            )
+
     if (
         result["network_params"]["network"] == constants.NETWORK_NAME.kurtosis
         or constants.NETWORK_NAME.shadowfork in result["network_params"]["network"]
@@ -763,6 +785,7 @@ def default_network_params():
         "deposit_contract_address": "Q42424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242",
         "seconds_per_slot": 60,
         "slots_per_epoch": 128,
+        "epochs_per_execution_voting_period": 4,
         "num_validator_keys_per_node": 64,
         "preregistered_validator_keys_mnemonic": constants.DEFAULT_MNEMONIC,
         "preregistered_validator_count": 0,
@@ -795,6 +818,7 @@ def default_minimal_network_params():
         "deposit_contract_address": "Q42424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242",
         "seconds_per_slot": 15,
         "slots_per_epoch": 60,
+        "epochs_per_execution_voting_period": 4,
         "num_validator_keys_per_node": 64,
         "preregistered_validator_keys_mnemonic": constants.DEFAULT_MNEMONIC,
         "preregistered_validator_count": 0,
