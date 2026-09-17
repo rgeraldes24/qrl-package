@@ -70,7 +70,6 @@ network_params:
   network_id: "3151908"
   deposit_contract_address: "Q42424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242424242"
   seconds_per_slot: 60
-  # Mainnet Qrysm SSZ vote-list length is 512; the voting period is 512 / slots.
   slots_per_epoch: 128
   num_validator_keys_per_node: 64
   preregistered_validator_keys_mnemonic:
