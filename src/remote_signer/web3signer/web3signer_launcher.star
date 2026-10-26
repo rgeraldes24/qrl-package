@@ -1,5 +1,4 @@
 constants = import_module("../../package_io/constants.star")
-input_parser = import_module("../../package_io/input_parser.star")
 node_metrics = import_module("../../node_metrics_info.star")
 remote_signer_context = import_module("../remote_signer_context.star")
 shared_utils = import_module("../../shared_utils/shared_utils.star")
@@ -37,29 +36,20 @@ def launch(
     plan,
     launcher,
     service_name,
-    remote_signer_type,
     image,
-    full_name,
-    vc_type,
-    node_keystore_files,
     participant,
-    global_tolerations,
+    global_log_level,
+    tolerations,
     node_selectors,
     port_publisher,
     remote_signer_index,
 ):
-    tolerations = input_parser.get_client_tolerations(
-        participant.remote_signer_tolerations,
-        participant.tolerations,
-        global_tolerations,
-    )
-
     config = get_config(
         participant=participant,
         el_cl_genesis_data=launcher.el_cl_genesis_data,
         image=image,
-        vc_type=vc_type,
-        node_keystore_files=node_keystore_files,
+        vc_type=launcher.vc_type,
+        node_keystore_files=launcher.node_keystore_files,
         tolerations=tolerations,
         node_selectors=node_selectors,
         port_publisher=port_publisher,
@@ -85,7 +75,7 @@ def launch(
 
     return remote_signer_context.new_remote_signer_context(
         http_url=remote_signer_http_url,
-        client_name=remote_signer_type,
+        client_name=constants.REMOTE_SIGNER_TYPE.web3signer,
         service_name=service_name,
         metrics_info=remote_signer_node_metrics_info,
     )
@@ -183,5 +173,9 @@ def get_config(
     return ServiceConfig(**config_args)
 
 
-def new_remote_signer_launcher(el_cl_genesis_data):
-    return struct(el_cl_genesis_data=el_cl_genesis_data)
+def new_web3signer_launcher(el_cl_genesis_data, vc_type, node_keystore_files):
+    return struct(
+        el_cl_genesis_data=el_cl_genesis_data,
+        vc_type=vc_type,
+        node_keystore_files=node_keystore_files,
+    )
