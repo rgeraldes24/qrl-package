@@ -538,6 +538,25 @@ def parse_network_params(plan, input_args):
         if participant["use_remote_signer"] and not participant["use_separate_vc"]:
             fail("`use_remote_signer` requires `use_separate_vc`")
 
+        if (
+            participant["use_remote_signer"]
+            and remote_signer_type == constants.REMOTE_SIGNER_TYPE.go_remotesigner
+        ):
+            # go-remotesigner loads the deposit CLI keystores the package
+            # generates for the validator client, and the genesis state
+            if result["parallel_keystore_generation"]:
+                fail(
+                    "`remote_signer_type: go-remotesigner` loads the deposit CLI keystores, which `parallel_keystore_generation` does not generate"
+                )
+            network = result["network_params"]["network"]
+            if (
+                network != constants.NETWORK_NAME.kurtosis
+                and constants.NETWORK_NAME.shadowfork not in network
+            ):
+                fail(
+                    "`remote_signer_type: go-remotesigner` needs the validator keystores the package generates, which only the kurtosis network and shadowforks have"
+                )
+
         if vc_type == "":
             # Defaults to matching the chosen CL client
             vc_type = cl_type

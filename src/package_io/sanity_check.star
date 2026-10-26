@@ -1,3 +1,5 @@
+constants = import_module("./constants.star")
+
 PARTICIPANT_CATEGORIES = {
     "participants": [
         "el_type",
@@ -253,6 +255,11 @@ SUBCATEGORY_PARAMS = {
     ],
 }
 
+REMOTE_SIGNER_TYPES = [
+    constants.REMOTE_SIGNER_TYPE.clef,
+    constants.REMOTE_SIGNER_TYPE.go_remotesigner,
+]
+
 ADDITIONAL_SERVICES_PARAMS = [
     "assertoor",
     "broadcaster",
@@ -313,11 +320,23 @@ def validate_params(plan, input_args, category, allowed_params):
                 )
 
 
+def validate_remote_signer_types(participants, category):
+    for participant in participants:
+        remote_signer_type = participant.get("remote_signer_type")
+        if remote_signer_type != None and remote_signer_type not in REMOTE_SIGNER_TYPES:
+            fail(
+                "Invalid remote_signer_type {0} for {1}, allowed values: {2}".format(
+                    remote_signer_type, category, REMOTE_SIGNER_TYPES
+                )
+            )
+
+
 def sanity_check(plan, input_args):
     # Checks participants
     deep_validate_params(
         plan, input_args, "participants", PARTICIPANT_CATEGORIES["participants"]
     )
+    validate_remote_signer_types(input_args.get("participants", []), "participants")
     # Checks participants_matrix
     if "participants_matrix" in input_args:
         for sub_matrix_participant in input_args["participants_matrix"]:
@@ -339,6 +358,10 @@ def sanity_check(plan, input_args):
                     PARTICIPANT_MATRIX_PARAMS["participants_matrix"][
                         sub_matrix_participant
                     ],
+                )
+                validate_remote_signer_types(
+                    input_args["participants_matrix"][sub_matrix_participant],
+                    "participants_matrix.{0}".format(sub_matrix_participant),
                 )
 
     # Checks additional services
