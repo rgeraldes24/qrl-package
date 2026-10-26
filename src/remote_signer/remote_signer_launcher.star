@@ -1,4 +1,4 @@
-web3signer = import_module("./web3signer/web3signer_launcher.star")
+web3signer = import_module("./go_remotesigner/go_remotesigner_launcher.star")
 clef = import_module("./clef/clef_launcher.star")
 
 constants = import_module("../package_io/constants.star")
