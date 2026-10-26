@@ -3,6 +3,7 @@ shared_utils = import_module("../shared_utils/shared_utils.star")
 vc_shared = import_module("./shared.star")
 
 QRYSM_PASSWORD_MOUNT_DIRPATH_ON_SERVICE_CONTAINER = "/qrysm-password"
+QRYSM_REMOTE_SIGNER_DATADIR = "/data"
 QRYSM_BEACON_RPC_PORT = 4000
 
 
@@ -50,6 +51,10 @@ def get_config(
         "--graffiti=" + full_name,
     ]
 
+    files = {
+        constants.GENESIS_DATA_MOUNTPOINT_ON_CLIENTS: el_cl_genesis_data.files_artifact_uuid,
+    }
+
     if remote_signer_context == None:
         cmd.extend(
             [
@@ -57,15 +62,41 @@ def get_config(
                 "--wallet-password-file=" + validator_secrets_dirpath,
             ]
         )
+        files[
+            constants.VALIDATOR_KEYS_DIRPATH_ON_SERVICE_CONTAINER
+        ] = node_keystore_files.files_artifact_uuid
+        files[
+            QRYSM_PASSWORD_MOUNT_DIRPATH_ON_SERVICE_CONTAINER
+        ] = qrysm_password_artifact_uuid
     else:
+        # Every duty is signed by the remote signer: the validator client
+        # gets no wallet and no keystore, only its public keys, the sign
+        # token and the CA of the signer's certificate
         cmd.extend(
             [
-                "--remote-signer-url={0}".format(remote_signer_context.http_url),
-                "--remote-signer-keys={0}/api/v1/consensus/publicKeys".format(
-                    remote_signer_context.http_url
+                "--validators-external-signer-url=" + remote_signer_context.http_url,
+                "--validators-external-signer-key-file="
+                + shared_utils.path_join(
+                    constants.REMOTE_SIGNER_MOUNTPOINT_ON_CLIENTS,
+                    constants.REMOTE_SIGNER_KEY_FILENAME,
                 ),
+                "--validators-external-signer-auth-token-file="
+                + shared_utils.path_join(
+                    constants.REMOTE_SIGNER_MOUNTPOINT_ON_CLIENTS,
+                    constants.REMOTE_SIGNER_AUTH_TOKEN_FILENAME,
+                ),
+                "--validators-external-signer-tls-ca-file="
+                + shared_utils.path_join(
+                    constants.REMOTE_SIGNER_MOUNTPOINT_ON_CLIENTS,
+                    constants.REMOTE_SIGNER_TLS_CA_FILENAME,
+                ),
+                # The slashing-protection database, which no wallet directory holds
+                "--datadir=" + QRYSM_REMOTE_SIGNER_DATADIR,
             ]
         )
+        files[
+            constants.REMOTE_SIGNER_MOUNTPOINT_ON_CLIENTS
+        ] = remote_signer_context.vc_files_artifact_uuid
 
     keymanager_api_cmd = [
         "--rpc",
@@ -81,12 +112,6 @@ def get_config(
     if len(participant.vc_extra_params) > 0:
         # this is a repeated<proto type>, we convert it into Starlark
         cmd.extend([param for param in participant.vc_extra_params])
-
-    files = {
-        constants.GENESIS_DATA_MOUNTPOINT_ON_CLIENTS: el_cl_genesis_data.files_artifact_uuid,
-        constants.VALIDATOR_KEYS_DIRPATH_ON_SERVICE_CONTAINER: node_keystore_files.files_artifact_uuid,
-        QRYSM_PASSWORD_MOUNT_DIRPATH_ON_SERVICE_CONTAINER: qrysm_password_artifact_uuid,
-    }
 
     public_ports = {}
     public_keymanager_port_assignment = {}
