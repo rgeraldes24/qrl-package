@@ -320,8 +320,13 @@ def validate_params(plan, input_args, category, allowed_params):
                 )
 
 
+# Only participants that run a remote signer: one without it ignores the
+# type, as configs written before go-remotesigner (remote_signer_type:
+# web3signer with use_remote_signer: false) do
 def validate_remote_signer_types(participants, category):
     for participant in participants:
+        if not participant.get("use_remote_signer"):
+            continue
         remote_signer_type = participant.get("remote_signer_type")
         if remote_signer_type != None and remote_signer_type not in REMOTE_SIGNER_TYPES:
             fail(
@@ -358,10 +363,6 @@ def sanity_check(plan, input_args):
                     PARTICIPANT_MATRIX_PARAMS["participants_matrix"][
                         sub_matrix_participant
                     ],
-                )
-                validate_remote_signer_types(
-                    input_args["participants_matrix"][sub_matrix_participant],
-                    "participants_matrix.{0}".format(sub_matrix_participant),
                 )
 
     # Checks additional services
