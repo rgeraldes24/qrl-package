@@ -3,6 +3,7 @@ constants = import_module("../package_io/constants.star")
 TCP_PROTOCOL = "TCP"
 UDP_PROTOCOL = "UDP"
 HTTP_APPLICATION_PROTOCOL = "http"
+HTTPS_APPLICATION_PROTOCOL = "https"
 NOT_PROVIDED_APPLICATION_PROTOCOL = ""
 NOT_PROVIDED_WAIT = "not-provided-wait"
 

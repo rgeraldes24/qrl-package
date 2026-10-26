@@ -1,4 +1,4 @@
-web3signer = import_module("./go_remotesigner/go_remotesigner_launcher.star")
+go_remotesigner = import_module("./go_remotesigner/go_remotesigner_launcher.star")
 clef = import_module("./clef/clef_launcher.star")
 
 constants = import_module("../package_io/constants.star")
@@ -22,6 +22,11 @@ def launch(
     global_log_level,
     el_cl_genesis_data=None,
     node_keystore_files=None,
+    qrysm_password_artifact_uuid=None,
+    qrysm_password_relative_filepath=None,
+    generator_image=None,
+    network_validator_count=0,
+    slots_per_epoch=0,
 ):
     plan.print("Launching remote signer")
 
@@ -34,13 +39,18 @@ def launch(
             ),
             "launch_method": clef.launch,
         },
-        constants.REMOTE_SIGNER_TYPE.web3signer: {
-            "launcher": web3signer.new_web3signer_launcher(
+        constants.REMOTE_SIGNER_TYPE.go_remotesigner: {
+            "launcher": go_remotesigner.new_go_remotesigner_launcher(
                 el_cl_genesis_data=el_cl_genesis_data,
                 vc_type=vc_type,
                 node_keystore_files=node_keystore_files,
+                qrysm_password_artifact_uuid=qrysm_password_artifact_uuid,
+                qrysm_password_relative_filepath=qrysm_password_relative_filepath,
+                generator_image=generator_image,
+                network_validator_count=network_validator_count,
+                slots_per_epoch=slots_per_epoch,
             ),
-            "launch_method": web3signer.launch,
+            "launch_method": go_remotesigner.launch,
         },
     }
 

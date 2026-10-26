@@ -345,10 +345,12 @@ def launch_participant_network(
         )
 
         # clef signs for the execution clients and was launched once, above;
-        # the other remote signers sign for this participant's validator client
+        # the other remote signers sign for this participant's validator client,
+        # with its keystores
         if (
             participant.use_remote_signer
             and remote_signer_type != constants.REMOTE_SIGNER_TYPE.clef
+            and vc_keystores != None
         ):
             remote_signer_context = remote_signer.launch(
                 plan=plan,
@@ -368,6 +370,14 @@ def launch_participant_network(
                 global_log_level=args_with_right_defaults.global_log_level,
                 el_cl_genesis_data=el_cl_data,
                 node_keystore_files=vc_keystores,
+                qrysm_password_artifact_uuid=qrysm_password_artifact_uuid,
+                qrysm_password_relative_filepath=qrysm_password_relative_filepath,
+                generator_image=shared_utils.docker_cache_image_calc(
+                    args_with_right_defaults.docker_cache_params,
+                    args_with_right_defaults.qrl_genesis_generator_params.image,
+                ),
+                network_validator_count=total_number_of_validator_keys,
+                slots_per_epoch=network_params.slots_per_epoch,
             )
 
         all_remote_signer_contexts.append(remote_signer_context)

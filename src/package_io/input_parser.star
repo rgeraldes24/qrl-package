@@ -28,7 +28,7 @@ DEFAULT_VC_IMAGES_MINIMAL = {
 
 DEFAULT_REMOTE_SIGNER_IMAGES = {
     "clef": "qrledger/go-qrl:alltools-stable",
-    "web3signer": "consensys/web3signer:latest",
+    "go-remotesigner": "local/go-remotesigner:devnet",
 }
 
 # MEV Params
