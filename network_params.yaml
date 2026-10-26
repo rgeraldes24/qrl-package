@@ -42,7 +42,7 @@ participants:
     validator_count: null
     use_remote_signer: false
 # Remote signer
-    # clef, or go-remotesigner with remote_signer_image: local/go-remotesigner:devnet
+    # clef, or go-remotesigner with remote_signer_image set to an image you build (see README.md)
     remote_signer_type: clef
     remote_signer_auto_approve: false
     remote_signer_image: qrledger/go-qrl:alltools-stable
