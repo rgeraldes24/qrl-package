@@ -372,10 +372,9 @@ def launch_participant_network(
                 node_keystore_files=vc_keystores,
                 qrysm_password_artifact_uuid=qrysm_password_artifact_uuid,
                 qrysm_password_relative_filepath=qrysm_password_relative_filepath,
-                generator_image=shared_utils.docker_cache_image_calc(
-                    args_with_right_defaults.docker_cache_params,
-                    args_with_right_defaults.qrl_genesis_generator_params.image,
-                ),
+                # go-remotesigner runs only on the kurtosis network and
+                # shadowforks, whose launch returned this image
+                generator_image=qrl_genesis_generator_image,
                 network_validator_count=total_number_of_validator_keys,
                 slots_per_epoch=network_params.slots_per_epoch,
             )

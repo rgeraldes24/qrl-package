@@ -16,6 +16,13 @@ GO_REMOTESIGNER_PASSWORD_FILENAME = "password.txt"
 GO_REMOTESIGNER_TLS_CERT_FILEPATH = "tls/cert.pem"
 GO_REMOTESIGNER_TLS_KEY_FILEPATH = "tls/key.pem"
 
+# Where the step that prepares those files mounts the validator client's
+# keystores and the qrysm password file
+KEYSTORES_MOUNTPOINT_ON_FILES_STEP = (
+    constants.VALIDATOR_KEYS_DIRPATH_ON_SERVICE_CONTAINER
+)
+QRYSM_PASSWORD_MOUNTPOINT_ON_FILES_STEP = "/qrysm-password"
+
 # The image's data directory: the slashing-protection store (bbolt, on) and
 # the admin token the signer generates
 GO_REMOTESIGNER_DATA_DIRPATH = "/data"
@@ -60,12 +67,6 @@ VERBOSITY_LEVELS = {
     constants.GLOBAL_LOG_LEVEL.debug: "DEBUG",
     constants.GLOBAL_LOG_LEVEL.trace: "TRACE",
 }
-
-# The min/max CPU/memory that the remote signer can use
-MIN_CPU = 50
-MAX_CPU = 300
-MIN_MEMORY = 128
-MAX_MEMORY = 1024
 
 
 def launch(
@@ -150,14 +151,13 @@ def launch(
 # The token never appears in a command line, and the CA key never leaves
 # this step.
 def prepare_files(plan, launcher, service_name, validator_count):
-    keystores_mountpoint = "/keystores"
-    password_mountpoint = "/qrysm-password"
     keystores_dirpath = shared_utils.path_join(
-        keystores_mountpoint,
+        KEYSTORES_MOUNTPOINT_ON_FILES_STEP,
         launcher.node_keystore_files.validator_keys_relative_dirpath,
     )
     password_filepath = shared_utils.path_join(
-        password_mountpoint, launcher.qrysm_password_relative_filepath
+        QRYSM_PASSWORD_MOUNTPOINT_ON_FILES_STEP,
+        launcher.qrysm_password_relative_filepath,
     )
 
     signer = "/out/signer"
@@ -230,8 +230,8 @@ def prepare_files(plan, launcher, service_name, validator_count):
         image=launcher.generator_image,
         files={
             constants.GENESIS_DATA_MOUNTPOINT_ON_CLIENTS: launcher.el_cl_genesis_data.files_artifact_uuid,
-            keystores_mountpoint: launcher.node_keystore_files.files_artifact_uuid,
-            password_mountpoint: launcher.qrysm_password_artifact_uuid,
+            KEYSTORES_MOUNTPOINT_ON_FILES_STEP: launcher.node_keystore_files.files_artifact_uuid,
+            QRYSM_PASSWORD_MOUNTPOINT_ON_FILES_STEP: launcher.qrysm_password_artifact_uuid,
         },
         run=run,
         store=[
