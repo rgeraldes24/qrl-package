@@ -14,6 +14,9 @@ SUCCESSFUL_EXEC_CMD_EXIT_CODE = 0
 
 QRYSM_DIRNAME = "qrysm"
 
+# Where the deposit CLI writes the keystores and the deposit data
+VALIDATOR_KEYS_DIRNAME = "validator_keys"
+
 KEYSTORE_GENERATION_FINISHED_FILEPATH_FORMAT = "/tmp/keystores_generated-{0}-{1}"
 
 SERVICE_NAME_PREFIX = "validator-key-generation-"
@@ -117,7 +120,7 @@ def generate_validator_keystores(plan, mnemonic, withdrawal_address, participant
             "/usr/local/bin/deposit",
             start_index,
             participant.validator_count,
-            shared_utils.path_join(output_dirpath, "validator_keys"),
+            shared_utils.path_join(output_dirpath, VALIDATOR_KEYS_DIRNAME),
             mnemonic,
             QRYSM_PASSWORD_FILEPATH_ON_GENERATOR,
             withdrawal_address,
@@ -136,7 +139,7 @@ def generate_validator_keystores(plan, mnemonic, withdrawal_address, participant
 
         import_validator_keys_cmd = '{0} accounts import --keys-dir={1} --wallet-dir={2} --wallet-password-file={3} --account-password-file={4}'.format(
             "/usr/local/bin/validator",
-            shared_utils.path_join(output_dirpath, "validator_keys"),
+            shared_utils.path_join(output_dirpath, VALIDATOR_KEYS_DIRNAME),
             shared_utils.path_join(output_dirpath, "qrysm"),
             QRYSM_PASSWORD_FILEPATH_ON_GENERATOR,
             QRYSM_PASSWORD_FILEPATH_ON_GENERATOR,
@@ -188,6 +191,7 @@ def generate_validator_keystores(plan, mnemonic, withdrawal_address, participant
         to_add = keystore_files_module.new_keystore_files(
             artifact_name,
             shared_utils.path_join(base_dirname_in_artifact, QRYSM_DIRNAME),
+            shared_utils.path_join(base_dirname_in_artifact, VALIDATOR_KEYS_DIRNAME),
         )
 
         keystore_files.append(to_add)
