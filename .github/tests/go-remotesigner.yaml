@@ -1,0 +1,19 @@
+# The validator client signs every duty through go-remotesigner. The images
+# are local builds: go-remotesigner's consensus image (see "Remote signing for
+# validator clients" in README.md) and qrysm beacon-chain and validator images
+# whose validator has the --validators-external-signer-* flags, which no qrysm
+# release has yet.
+participants:
+  - el_type: gqrl
+    cl_type: qrysm
+    cl_image: local/qrysm:remote-signer-beacon-chain
+    vc_image: local/qrysm:remote-signer-validator
+    validator_count: 64
+    use_remote_signer: true
+    remote_signer_type: go-remotesigner
+    remote_signer_image: local/go-remotesigner:devnet
+network_params:
+  light_kdf_enabled: true
+  slots_per_epoch: 8
+additional_services:
+  - prometheus_grafana
