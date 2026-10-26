@@ -401,7 +401,7 @@ def get_config(
         "labels": shared_utils.label_maker(
             client=constants.REMOTE_SIGNER_TYPE.go_remotesigner,
             client_type=constants.CLIENT_TYPES.remote_signer,
-            image=image,
+            image=image[-constants.MAX_LABEL_LENGTH :],
             connected_client=vc_type,
             extra_labels=participant.remote_signer_extra_labels,
             supernode=participant.supernode,
