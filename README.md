@@ -1005,13 +1005,13 @@ every duty through its own [go-remotesigner](https://github.com/rgeraldes24/go-r
 QRL's ML-DSA-87 validator keys with the Web3Signer API. The validator client gets no wallet and no keystore.
 
 - **Image.** go-remotesigner has no published image, so `remote_signer_image` has no default and the package refuses
-  to start without it. Build the consensus-only image from go-remotesigner's `m/v1.1-prep` branch (its `main` has only a
+  to start without it. Build the consensus-only image from go-remotesigner's `m/audit-v1.1` branch (its `main` has only a
   README until that stack merges) with Go, [go-licenses](https://github.com/google/go-licenses) v2.0.1 and Docker buildx,
-  as its [`docs/operations/deploy-docker.md`](https://github.com/rgeraldes24/go-remotesigner/blob/m/v1.1-prep/docs/operations/deploy-docker.md#8-building-the-image)
+  as its [`docs/operations/deploy-docker.md`](https://github.com/rgeraldes24/go-remotesigner/blob/m/audit-v1.1/docs/operations/deploy-docker.md#8-building-the-image)
   describes:
 
   ```bash
-  git clone -b m/v1.1-prep https://github.com/rgeraldes24/go-remotesigner.git && cd go-remotesigner
+  git clone -b m/audit-v1.1 https://github.com/rgeraldes24/go-remotesigner.git && cd go-remotesigner
   go install github.com/google/go-licenses/v2@v2.0.1
   make image FLAVOUR=remotesigner-consensus IMAGE=local/go-remotesigner:devnet \
     GO_LICENSES="$(go env GOPATH)/bin/go-licenses"
