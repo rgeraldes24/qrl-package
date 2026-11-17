@@ -595,7 +595,7 @@ def parse_network_params(plan, input_args):
             and participant["remote_signer_image"] == ""
         ):
             fail(
-                "`remote_signer_type: go-remotesigner` has no default image: set `remote_signer_image` to a go-remotesigner consensus image, for example one built from https://github.com/rgeraldes24/go-remotesigner (branch m/v1.1-prep until its stack merges to main) with `make image FLAVOUR=remotesigner-consensus IMAGE=local/go-remotesigner:devnet`, which needs Go, go-licenses v2.0.1 (or GO_LICENSES) and docker buildx, see its docs/operations/deploy-docker.md"
+                "`remote_signer_type: go-remotesigner` has no default image: set `remote_signer_image` to a go-remotesigner consensus image, for example one built from https://github.com/rgeraldes24/go-remotesigner (branch m/audit-v1.1 until its stack merges to main) with `make image FLAVOUR=remotesigner-consensus IMAGE=local/go-remotesigner:devnet`, which needs Go, go-licenses v2.0.1 (or GO_LICENSES) and docker buildx, see its docs/operations/deploy-docker.md"
             )
 
         snooper_enabled = participant["snooper_enabled"]
